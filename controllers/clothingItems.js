@@ -10,9 +10,9 @@ const createItem = (req, res) => {
   console.log(req.body);
   console.log(req.user._id);
 
-  const { name, weather, imageURL } = req.body;
+  const { name, weather, imageUrl } = req.body;
 
-  ClothingItem.create({ name, weather, imageURL, owner: req.user._id })
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
       console.log(item);
       res.send({ data: item });
@@ -36,23 +36,23 @@ const getItems = (req, res) => {
     .catch((err) => {
       console.error(err);
       console.log(err.name);
-      res.status(DEFAULT_ERROR).send({ message: "Error from getItems", e });
+      res.status(DEFAULT_ERROR).send({ message: "Error from getItems" });
     });
 };
 
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageURL } = req.body;
+// const updateItem = (req, res) => {
+//   const { itemId } = req.params;
+//   const { imageURL } = req.body;
 
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
-    .orFail()
-    .then((item) => res.send({ data: item }))
-    .catch((err) => {
-      console.error(err);
-      console.log(err.name);
-      res.status(DEFAULT_ERROR).send({ message: "Error from updateItem", e });
-    });
-};
+//   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
+//     .orFail()
+//     .then((item) => res.send({ data: item }))
+//     .catch((err) => {
+//       console.error(err);
+//       console.log(err.name);
+//       res.status(DEFAULT_ERROR).send({ message: "Error from updateItem", e });
+//     });
+// };
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
@@ -134,7 +134,6 @@ const dislikeItem = (req, res) => {
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,
