@@ -18,6 +18,22 @@ const userSchema = new mongoose.Schema({
       message: "Link is not Valid ",
     },
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator(value) {
+        return validator.isEmail(value);
+      },
+      message: "Email is not Valid ",
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false,
+  },
 });
 
 module.exports = mongoose.model("user", userSchema);

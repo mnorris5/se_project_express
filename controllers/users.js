@@ -1,14 +1,23 @@
+const { hash } = require("bcrypt");
 const User = require("../models/user");
 const {
   INVALID_DATA_ERROR,
   NOT_FOUND_ERROR,
   DEFAULT_ERROR,
 } = require("../utils/errors");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar })
+  if (!email || !password) {
+    res.status(11000).send({ message: "duplicate key" });
+    return;
+  }
+  bcrypt
+    .hash(req.body.password)
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => res.send(user))
     .catch((err) => {
       console.error(err);
