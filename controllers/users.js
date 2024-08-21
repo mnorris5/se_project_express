@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const {
   INVALID_DATA_ERROR,
@@ -11,8 +11,7 @@ const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
-   return res.status(400).send({ message: "email or password is incorrect" });
-
+    return res.status(400).send({ message: "email or password is incorrect" });
   }
   return bcrypt
     .hash(req.body.password, 10)
@@ -21,9 +20,11 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === `ValidationError`) {
-       return res.status(INVALID_DATA_ERROR).send({ message: err.message });
+        return res.status(INVALID_DATA_ERROR).send({ message: err.message });
       } else {
-       return res.status(DEFAULT_ERROR).send({ message: "error from createUser" });
+        return res
+          .status(DEFAULT_ERROR)
+          .send({ message: "error from createUser" });
       }
     });
 };
@@ -36,43 +37,50 @@ const login = (req, res) => {
   if (!password) {
     return res.status(400).send({ mesage: "password is required" });
   }
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      if (!user) {
+        return res.status(400).send({ message: "invalid email or password" });
+      }
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(INVALID_DATA_ERROR).send({ mesage: err.message });
+    });
 };
-return User.findUserByCredentials(email, password).then((user) => {
-  if (!user) {
-    return res.status(400).send({ message: "invalid email or password" });
-  }
-  // JWT token
-  const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-    expiresIn: "7d",
-  });
-});
+const getCurrentUser = (req, res) => {
+  const userId = req.user._id;
 
-// const getUser = (req, res) => {
-//   const { userId } = req.params;
+  User.findById(userId)
+    .orFail()
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else if (err.name === "CastError") {
+        res.status(INVALID_DATA_ERROR).send({ message: "Invalid ID" });
+      } else {
+        res.status(DEFAULT_ERROR).send({ message: "Error from getUser" });
+      }
+    });
+};
+const updateUser = (req, res) => {
+  const { name, avatar } = req.body;
+  const userId = req.user._id;
+  User.findByIdAndUpdate(userId, { name, avatar });
 
-//   User.findById(userId)
-//     .orFail()
-//     .then((user) => res.status(200).send({ data: user }))
-//     .catch((err) => {
-//       console.error(err);
-//       if (err.name === "DocumentNotFoundError") {
-//         res.status(NOT_FOUND_ERROR).send({ message: err.message });
-//       } else if (err.name === "CastError") {
-//         res.status(INVALID_DATA_ERROR).send({ message: "Invalid ID" });
-//       } else {
-//         res.status(DEFAULT_ERROR).send({ message: "Error from getUser" });
-//       }
-//     });
-// };
-// const getUsers = (req, res) => {
-//   User.find({})
-//     .then((users) => res.status(200).send(users))
-//     .catch((err) => {
-//       console.error(err);
-//       res.status(DEFAULT_ERROR).send({ message: "Error from getUsers" });
-//     });
-// };
+  User.find({})
+    .then((users) => res.status(200).send(users))
+    .catch((err) => {
+      console.error(err);
+      res.status(DEFAULT_ERROR).send({ message: "Error from getUsers" });
+    });
+};
 
-module.exports = { createUser, login };
-
-// getUser, getUsers,
+module.exports = { createUser, login, getCurrentUser, updateUser };
