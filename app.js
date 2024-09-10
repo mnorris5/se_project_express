@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const app = express();
 const { PORT = 3001 } = process.env;
 
-const {createUser, login} = require("./controllers/users");
+const { createUser, login } = require("./controllers/users");
 
 mongoose.connect(
   "mongodb://127.0.0.1:27017/wtwr_db",
@@ -16,20 +16,19 @@ mongoose.connect(
 
 const routes = require("./routes");
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "5d8b8592978f8bd833ca8133", // paste the _id of the test user created in the previous step
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: "5d8b8592978f8bd833ca8133", // paste the _id of the test user created in the previous step
+//   };
+//   next();
+// });
 
 app.use(express.json());
 
-app.post("/signin", login)
-app.post("/signup", createUser)
+app.post("/signin", login);
+app.post("/signup", createUser);
 
-app.use (auth);
-
+app.use(auth);
 
 // app.post("/signin")
 app.use("/", routes);

@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
         return validator.isURL(value);
       },
       message: "Link is not Valid ",
+     
     },
   },
   email: {
