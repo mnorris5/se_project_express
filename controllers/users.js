@@ -48,7 +48,7 @@ const login = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       if (!user) {
-        // should be auth error
+       
         return res.status(401).send({ message: "invalid email or password" });
       }
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -58,7 +58,7 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      // should be auth error
+
       return res.status(AUTHORIZATION_ERROR).send({ message: err.message });
     });
 };
@@ -87,22 +87,7 @@ const getCurrentUser = (req, res) => {
       .send({ message: "An error has occurred on the server" });
   });
 }
-// const getCurrentUser = (req, res) => {
-//   // const userId = req.user._id;
-//   User.findById(userId)
-//     .orFail()
-//     .then((user) => res.status(200).send(user))
-//     .catch((err) => {
-//       console.error(err);
-//       if (err.name === "DocumentNotFoundError") {
-//         return res.status(NOT_FOUND_ERROR).send({ message: err.message });
-//       } else if (err.name === "CastError") {
-//         res.status(INVALID_DATA_ERROR).send({ message: "Invalid ID" });
-//       } else {
-//         res.status(DEFAULT_ERROR).send({ message: "Error from getUser" });
-//       }
-//     });
-// };
+
 
 const updateUser = (req, res) => {
   const { name, avatar } = req.body;
