@@ -3,6 +3,7 @@ const {
   INVALID_DATA_ERROR,
   NOT_FOUND_ERROR,
   DEFAULT_ERROR,
+  FORBIDDEN_ERROR
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
@@ -63,8 +64,8 @@ const deleteItem = (req, res) => {
     .then((item) => {
       if (String(item.owner) !== req.user._id) {
         return res
-          .status(ERROR_CODES.FORBIDDEN)
-          .SEND({ message: ERROR_MESSAGES.FORBIDDEN });
+          .status(FORBIDDEN_ERROR)
+          .send({ message: "Forbidden" });
       }
       return item
         .deleteOne()

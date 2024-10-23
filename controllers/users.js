@@ -30,11 +30,11 @@ const createUser = (req, res) => {
         return res.status(INVALID_DATA_ERROR).send({ message: err.message });
       } if (err.code === 11000) {
         return res.status(CONFLICT_ERROR).send({ message: "duplicate user" });
-      } 
+      }
         return res
           .status(DEFAULT_ERROR)
           .send({ message: "error from createUser" });
-      
+
     });
 };
 
@@ -60,10 +60,10 @@ const login = (req, res) => {
     })
     .catch((err) => {
       // console.error(err);
-      if (err.message === "Incorect email or password") {
+      if (err.message === "Incorrect email or password") {
         return res
           .status(AUTHORIZATION_ERROR)
-          .send({ message: "Incorect email or password" });
+          .send({ message: "Incorrect email or password" });
       }
 
       return res.status(DEFAULT_ERROR).send({ message: err.message });
