@@ -58,9 +58,18 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   console.log(itemId);
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
-    .then(() => res.status(200).send({ message: "Item deleted" }))
+    .then((item) => {
+      if (String(item.owner) !== req.user._id) {
+        return res
+          .status(ERROR_CODES.FORBIDDEN)
+          .SEND({ message: ERROR_MESSAGES.FORBIDDEN });
+      }
+      return item
+        .deleteOne()
+        .then(() => res.status(200).send({ message: "Successfully deleted" }));
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === `CastError`) {

@@ -8,7 +8,7 @@ router.use(auth);
 
 const { getCurrentUser, updateUser } = require("../controllers/users");
 
-//router.get("/", getUsers);
+// router.get("/", getUsers);
 router.get("/me", auth, getCurrentUser);
 router.patch("/me", auth, updateUser);
 
